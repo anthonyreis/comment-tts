@@ -33,26 +33,32 @@ app.use(bodyParser.urlencoded({
 
 //Rotas
 
-app.get('/', (req, res) => {
+app.get('/:statusCode?', (req, res) => {
     Post.findAll({
-        attributes: ['id','conteudo']
-      }).then( posts => {
-        res.render('main', {posts: posts})
-      })
-  })
+      attributes: ['id','conteudo']
+    }).then( posts => {
+      if (req.params.statusCode == 401){
+        return res.render('main', {posts: posts,
+          msg: 'O campo de comentários não pode ficar vazio'})
+      } else if (req.params.statusCode == 200){
+        return res.render('main', {posts: posts,
+                                  msg: 'Comentário adicionado com sucesso!'})
+      }   
+      return res.render('main', {posts: posts})
+    })
+})
 
 app.post('/add', (req, res) => {
-  
-  if(Object.keys(res.req.body.comment).length > 1){
+  if(Object.keys(req.body.comment).length > 1){
     Post.create({
-      conteudo: res.req.body.comment
+      conteudo: req.body.comment
     }).then(() => {
-      res.redirect('/')
+      res.redirect('/200')
     }).catch( erro => {
       return res.send("Houve um erro: " + erro)
     })
   }else {
-    return res.send("O campo de comentários não pode ficar vazio!")
+    return res.redirect('/401')
   }
 })
 

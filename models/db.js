@@ -9,7 +9,11 @@ const sequelize = new Sequelize('postApp', 'root', '123456', {
 
 const Post = sequelize.define('posts', {
   conteudo: {
-    type: Sequelize.TEXT
+    type: Sequelize.TEXT,
+    allowNull: false,
+    validate: {
+      notNull: { msg: "O campo de comentário não pode estar vazio!" },
+    }
   }
 })
 
